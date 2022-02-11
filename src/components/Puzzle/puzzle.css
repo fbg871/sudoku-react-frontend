@@ -1,0 +1,191 @@
+/* Grid component */
+
+.grid {
+	pointer-events: none;
+	stroke: rgb(223, 223, 223);
+}
+
+[data-row='1'],
+[data-row='4'],
+[data-row='7'],
+[data-row='10'],
+[data-column='1'],
+[data-column='4'],
+[data-column='7'],
+[data-column='10'] {
+	stroke-width: 2;
+}
+
+[data-column='1'],
+[data-column='10'],
+[data-row='1'],
+[data-row='10'] {
+	stroke-linecap: square;
+}
+
+/* Highlight component */
+
+.highlight {
+	fill: #bbbbbb;
+	opacity: 0.5;
+}
+
+.rightclick {
+	fill: #7c7c7c;
+	opacity: 0.8;
+}
+
+.related {
+	fill: #818181;
+}
+
+.prefill rect {
+	fill: rgb(99, 99, 99);
+}
+
+/* Numbers component */
+
+.sudoku-numbers {
+	outline-width: 0;
+	font-size: 34px;
+	fill: rgb(221, 221, 221);
+	text-anchor: middle;
+	alignment-baseline: central;
+	font-weight: normal;
+	pointer-events: none;
+}
+
+.numbers text {
+	outline-width: 0;
+	font-size: 34px;
+	text-anchor: middle;
+	alignment-baseline: central;
+	font-weight: normal;
+	pointer-events: none;
+}
+
+.nofill {
+	fill: rgb(255, 197, 122);
+}
+
+.fill {
+	fill: white;
+}
+
+/* Selector component */
+
+.pencil-selector {
+	fill: rgb(194, 194, 194);
+	font-size: 13px;
+	font-weight: normal;
+	outline-width: 0;
+}
+
+.cancel {
+	fill: rgb(197, 0, 0);
+	font-size: 14px;
+	font-weight: bold;
+	outline-width: 0;
+}
+
+.mouse-selector {
+	outline-width: 0;
+	font-size: 27px;
+	text-anchor: middle;
+	fill: white;
+
+	alignment-baseline: central;
+	font-weight: bolder;
+	pointer-events: none;
+	cursor: none;
+	opacity: 0.5;
+}
+
+/* Pencilmarks component */
+
+.sudoku-pencilmarks {
+	font-size: 13px;
+	outline-width: 0;
+	fill: white;
+}
+
+/* Sudokucell component */
+
+@font-face {
+	font-family: 'Poppins';
+	src: local('Poppins'), url('../../fonts/Poppins-Regular.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Rubik';
+	src: local('Rubik'), url('../../fonts/Rubik-Regular.ttf') format('truetype');
+}
+
+.sudoku-cell {
+	fill: transparent;
+	pointer-events: auto;
+	outline: 0;
+	font-family: 'Rubik';
+}
+
+[data-rightclick='true'] {
+	cursor: none;
+}
+
+.corner {
+	pointer-events: none;
+	fill: transparent;
+	outline: 0;
+}
+[data-activate='true'] {
+	pointer-events: auto;
+	/* fill: rgb(61, 61, 61); */
+	fill: transparent;
+}
+
+.complete {
+	width: 20rem;
+	height: 10rem;
+	background-color: white;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	border-radius: 20px;
+	text-align: center;
+}
+
+.error {
+	fill: red;
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+/* blah */
+.game-section {
+	width: 80% !important;
+	padding-top: 1% !important;
+}
+
+.sudoku-game {
+	display: block;
+	margin: auto;
+	width: 100%;
+	height: 100%;
+	font-family: 'Rubik';
+}
+
+.sudoku-board {
+	background-color: rgb(61, 61, 61);
+	padding: 2%;
+	border-radius: 5px 5px 0 0;
+}
+
+svg,
+text {
+	/* Makes text not highlightable */
+	-webkit-user-select: none; /* Safari */
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* IE10+/Edge */
+	user-select: none; /* Standard */
+}

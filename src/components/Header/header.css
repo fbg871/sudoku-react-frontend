@@ -1,0 +1,51 @@
+@font-face {
+	font-family: 'Roboto';
+	src: local('Roboto'), url('../../fonts/Roboto-Regular.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Varela Round';
+	src: local('Varela Round'),
+		url('../../fonts/VarelaRound-Regular.ttf') format('truetype');
+}
+
+.title {
+	font-family: 'Varela Round' !important;
+
+	display: inline;
+
+	color: rgb(228, 228, 228);
+	/* Makes text not highlightable */
+	-webkit-user-select: none; /* Safari */
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* IE10+/Edge */
+	user-select: none; /* Standard */
+}
+
+#no {
+	opacity: 0.5;
+}
+
+.logo {
+	text-align: center;
+}
+
+#light {
+	fill: rgb(68, 68, 68);
+	color: rgb(68, 68, 68);
+	background-color: rgb(228, 228, 228);
+}
+
+.header-bar {
+	fill: rgb(228, 228, 228);
+	color: rgb(228, 228, 228);
+	background-color: #262930;
+}
+
+.icondark {
+	content: url('/src/assets/shaka_dark.png');
+}
+
+.iconlight {
+	content: url('/src/assets/shaka_light.png');
+}
