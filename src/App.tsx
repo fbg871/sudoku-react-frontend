@@ -6,6 +6,7 @@ import Profile from './components/Profile/Profile'
 import PlayPuzzle from './components/Puzzle/PlayPuzzle/PlayPuzzle'
 import { Provider } from 'react-redux'
 import { store } from './store'
+import Home from './components/Home'
 
 function App() {
 	return (
@@ -15,7 +16,7 @@ function App() {
 					<Header />
 					<BrowserRouter>
 						<Routes>
-							<Route path="/" element={<Profile />} />
+							<Route path="/" element={<Home />} />
 							<Route path="/play" element={<PlayPuzzle />} />
 						</Routes>
 					</BrowserRouter>
