@@ -6,7 +6,7 @@
 	height: 70vh;
 }
 
-button {
+/* button {
 	padding: 1.5em 5em;
 	background: rgb(40, 44, 52);
 	border: none;
@@ -29,4 +29,4 @@ button:hover {
 button:active {
 	box-shadow: inset -10px -10px 20px rgba(255, 255, 255, 0.05),
 		inset 10px 10px 20px rgba(0, 0, 0, 0.2);
-}
+} */

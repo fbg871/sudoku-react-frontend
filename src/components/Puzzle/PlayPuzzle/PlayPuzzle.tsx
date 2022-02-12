@@ -9,6 +9,7 @@ import Selector from '../Shared/Selector'
 import PencilMarks from './PencilMarks'
 
 import '../puzzle.css'
+import GameBar from '../../GameBar/GameBar'
 
 const PlayPuzzle = () => {
 	const userSettings = useSelector((state: RootState) => state.settings)
@@ -32,6 +33,7 @@ const PlayPuzzle = () => {
 					<SudokuCells />
 				</svg>
 			</Box>
+			<GameBar />
 		</Container>
 	)
 }
