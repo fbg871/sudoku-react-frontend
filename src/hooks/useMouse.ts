@@ -8,6 +8,7 @@ import {
 	setRightClick,
 	setLeftClickDown,
 	purgeRightClick,
+	toggleMultiSelect,
 } from '../slices/selectionSlice'
 import {
 	addTemporary,
@@ -16,38 +17,69 @@ import {
 	deleteAll,
 	deleteTemporary,
 	incrementTemporary,
+	removeFromPencilMarks,
 	removeTemporaryFromPencil,
 	swapTemporaryWithValue,
 	swapValueWithTemporary,
 } from '../slices/puzzleSlice'
-import { MouseEvent, WheelEvent } from 'react'
+import { MouseEvent, useState, WheelEvent } from 'react'
+import { getBlock, getCol, getRow } from '../helpers/conflicting'
 
 const useMouse = () => {
 	const prefilled = useSelector((state: RootState) => state.puzzle.puzzle.prefilled)
 
-	const grid = useSelector((state: RootState) => state.selection)
+	const selection = useSelector((state: RootState) => state.selection)
 	const puzzle = useSelector((state: RootState) => state.puzzle)
+	const settings = useSelector((state: RootState) => state.settings)
 
 	const dispatch = useDispatch()
 
+	const autoRemovePencilmarks = (input: number, index: number) => {
+		let inputRow = getRow(index)
+		let inputCol = getCol(index)
+		let inputBlock = getBlock(index)
+
+		for (let i = 0; i < 81; i++) {
+			if (
+				i !== index &&
+				(getRow(i) === inputRow ||
+					getCol(i) === inputCol ||
+					getBlock(i) === inputBlock)
+			) {
+				dispatch(removeFromPencilMarks([i, input]))
+			}
+		}
+	}
+
 	const handleScroll = (event: WheelEvent<SVGRectElement>) => {
-		for (let i = 0; i < grid.rightClickDown.length; i++) {
-			if (puzzle.progress.values[grid.rightClickDown[i]] === null) {
+		if (!selection.leftClickDown && selection.rightClickDown.length === 0) {
+			dispatch(toggleMultiSelect())
+		}
+		for (let i = 0; i < selection.rightClickDown.length; i++) {
+			if (puzzle.progress.values[selection.rightClickDown[i]] === null) {
 				if (event.deltaY < 0) {
-					if (puzzle.progress.temporaryValues[grid.rightClickDown[i]] === null) {
-						dispatch(addTemporary([grid.rightClickDown[i], 1]))
-					} else if (puzzle.progress.temporaryValues[grid.rightClickDown[i]] === 9) {
-						dispatch(deleteTemporary(grid.rightClickDown[i]))
+					if (
+						puzzle.progress.temporaryValues[selection.rightClickDown[i]] === null
+					) {
+						dispatch(addTemporary([selection.rightClickDown[i], 1]))
+					} else if (
+						puzzle.progress.temporaryValues[selection.rightClickDown[i]] === 9
+					) {
+						dispatch(deleteTemporary(selection.rightClickDown[i]))
 					} else {
-						dispatch(incrementTemporary(grid.rightClickDown[i]))
+						dispatch(incrementTemporary(selection.rightClickDown[i]))
 					}
 				} else {
-					if (puzzle.progress.temporaryValues[grid.rightClickDown[i]] === null) {
-						dispatch(addTemporary([grid.rightClickDown[i], 9]))
-					} else if (puzzle.progress.temporaryValues[grid.rightClickDown[i]] === 1) {
-						dispatch(deleteTemporary(grid.rightClickDown[i]))
+					if (
+						puzzle.progress.temporaryValues[selection.rightClickDown[i]] === null
+					) {
+						dispatch(addTemporary([selection.rightClickDown[i], 9]))
+					} else if (
+						puzzle.progress.temporaryValues[selection.rightClickDown[i]] === 1
+					) {
+						dispatch(deleteTemporary(selection.rightClickDown[i]))
 					} else {
-						dispatch(decrementTemporary(grid.rightClickDown[i]))
+						dispatch(decrementTemporary(selection.rightClickDown[i]))
 					}
 				}
 			}
@@ -59,8 +91,8 @@ const useMouse = () => {
 			case 0:
 				console.log(index)
 				dispatch(purgeRelated())
-				if (event.shiftKey || event.ctrlKey) {
-					if (!grid.selected.includes(index)) {
+				if (event.shiftKey || event.ctrlKey || selection.multiSelect) {
+					if (!selection.selected.includes(index)) {
 						dispatch(addToSelected(index))
 					}
 					dispatch(setLeftClickDown(true))
@@ -71,7 +103,7 @@ const useMouse = () => {
 							if (
 								index !== i &&
 								puzzle.progress.values[index] === puzzle.progress.values[i] &&
-								!grid.related.includes(i)
+								!selection.related.includes(i)
 							) {
 								dispatch(addToRelated(i))
 							}
@@ -85,23 +117,23 @@ const useMouse = () => {
 				break
 			// Middle click
 			case 1:
-				for (let i = 0; i < grid.selected.length; i++) {
-					if (!prefilled.includes(grid.selected[i])) {
-						dispatch(deleteAll(grid.selected[i]))
+				for (let i = 0; i < selection.selected.length; i++) {
+					if (!prefilled.includes(selection.selected[i])) {
+						dispatch(deleteAll(selection.selected[i]))
 					}
 				}
 				break
 			// Right click
 			case 2:
 				event.preventDefault()
-				for (let i = 0; i < grid.selected.length; i++) {
-					if (!prefilled.includes(grid.selected[i])) {
-						dispatch(setRightClick(grid.selected[i]))
+				for (let i = 0; i < selection.selected.length; i++) {
+					if (!prefilled.includes(selection.selected[i])) {
+						dispatch(setRightClick(selection.selected[i]))
 						if (
-							puzzle.progress.values[grid.selected[i]] !== null &&
-							grid.selected.length === 1
+							puzzle.progress.values[selection.selected[i]] !== null &&
+							selection.selected.length === 1
 						) {
-							dispatch(swapValueWithTemporary(grid.selected[i]))
+							dispatch(swapValueWithTemporary(selection.selected[i]))
 						}
 					}
 				}
@@ -109,7 +141,7 @@ const useMouse = () => {
 		}
 	}
 	const handleMouseMove = (index: number) => {
-		if (grid.leftClickDown && !grid.selected.includes(index)) {
+		if (selection.leftClickDown && !selection.selected.includes(index)) {
 			dispatch(addToSelected(index))
 			dispatch(purgeRelated())
 		}
@@ -125,19 +157,50 @@ const useMouse = () => {
 			// Right click released
 			case 2:
 				event.preventDefault()
-				if (grid.rightClickDown.length === 1) {
-					dispatch(swapTemporaryWithValue(grid.rightClickDown[0]))
-				} else if (grid.rightClickDown.length > 1) {
-					for (let i = 0; i < grid.rightClickDown.length; i++) {
-						if (puzzle.progress.temporaryValues[grid.rightClickDown[i]] !== null) {
+				if (
+					selection.rightClickDown.length === 1 &&
+					puzzle.progress.pencilmarks[selection.rightClickDown[0]].length === 0
+				) {
+					if (
+						settings.autoRemove &&
+						puzzle.progress.temporaryValues[selection.rightClickDown[0]]
+					) {
+						autoRemovePencilmarks(
+							puzzle.progress.temporaryValues[selection.rightClickDown[0]]!,
+							selection.rightClickDown[0]
+						)
+					}
+					dispatch(swapTemporaryWithValue(selection.rightClickDown[0]))
+				} else if (
+					selection.rightClickDown.length === 1 &&
+					puzzle.progress.pencilmarks[selection.rightClickDown[0]].length > 0
+				) {
+					if (
+						puzzle.progress.temporaryValues[selection.rightClickDown[0]] !== null
+					) {
+						if (
+							!puzzle.progress.pencilmarks[selection.rightClickDown[0]].includes(
+								puzzle.progress.temporaryValues[selection.rightClickDown[0]]!
+							)
+						) {
+							dispatch(addTemporaryToPencil(selection.rightClickDown[0]))
+						} else {
+							dispatch(removeTemporaryFromPencil(selection.rightClickDown[0]))
+						}
+					}
+				} else if (selection.rightClickDown.length > 1) {
+					for (let i = 0; i < selection.rightClickDown.length; i++) {
+						if (
+							puzzle.progress.temporaryValues[selection.rightClickDown[i]] !== null
+						) {
 							if (
-								!puzzle.progress.pencilmarks[grid.rightClickDown[i]].includes(
-									puzzle.progress.temporaryValues[grid.rightClickDown[i]]!
+								!puzzle.progress.pencilmarks[selection.rightClickDown[i]].includes(
+									puzzle.progress.temporaryValues[selection.rightClickDown[i]]!
 								)
 							) {
-								dispatch(addTemporaryToPencil(grid.rightClickDown[i]))
+								dispatch(addTemporaryToPencil(selection.rightClickDown[i]))
 							} else {
-								dispatch(removeTemporaryFromPencil(grid.rightClickDown[i]))
+								dispatch(removeTemporaryFromPencil(selection.rightClickDown[i]))
 							}
 						}
 					}

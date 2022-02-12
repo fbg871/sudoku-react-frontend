@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../../store'
 import { removeAllSelected, setLeftClickDown } from '../../../slices/selectionSlice'
 
-import { ClickAwayListener, Modal } from '@mui/material'
-import PuzzleComplete from './PuzzleComplete'
+import { ClickAwayListener } from '@mui/material'
 import useKeyboard from '../../../hooks/useKeyboard'
 import useMouse from '../../../hooks/useMouse'
 

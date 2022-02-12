@@ -5,6 +5,7 @@ interface SelectionState {
 	leftClickDown: boolean
 	rightClickDown: number[]
 	related: number[]
+	multiSelect: boolean
 }
 
 const initialState: SelectionState = {
@@ -12,6 +13,7 @@ const initialState: SelectionState = {
 	leftClickDown: false,
 	rightClickDown: [],
 	related: [],
+	multiSelect: false,
 }
 
 export const selectionSlice = createSlice({
@@ -43,6 +45,9 @@ export const selectionSlice = createSlice({
 		setLeftClickDown: (state, action) => {
 			state.leftClickDown = action.payload
 		},
+		toggleMultiSelect: (state) => {
+			state.multiSelect = !state.multiSelect
+		},
 	},
 })
 
@@ -55,6 +60,7 @@ export const {
 	addToRelated,
 	purgeRelated,
 	setLeftClickDown,
+	toggleMultiSelect,
 } = selectionSlice.actions
 
 export default selectionSlice.reducer

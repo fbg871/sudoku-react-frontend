@@ -26,7 +26,10 @@ const Selector = () => {
 	let tempVal: JSX.Element[] = []
 	let tempPenc: JSX.Element[] = []
 
-	if (grid.rightClickDown.length === 1) {
+	if (
+		grid.rightClickDown.length === 1 &&
+		pencilmarks[grid.rightClickDown[0]].length == 0
+	) {
 		temporaryNumbers.forEach((temp, index) => {
 			if (grid.rightClickDown.includes(index) && !preFilled.includes(index)) {
 				tempVal.push(
@@ -37,6 +40,45 @@ const Selector = () => {
 						x={(index % 9) * 50 + 25}
 						width="50"
 						height="50">
+						{temp}
+					</text>
+				)
+			}
+		})
+	} else if (grid.rightClickDown.length === 1) {
+		temporaryNumbers.forEach((temp, index) => {
+			if (
+				grid.rightClickDown.includes(index) &&
+				!preFilled.includes(index) &&
+				temp !== null &&
+				values[index] === null &&
+				pencilmarks[index].includes(temp)
+			) {
+				tempPenc.push(
+					<text
+						key={index}
+						className="cancel"
+						x={getPencilCoordinates(temp, index)[0]}
+						y={getPencilCoordinates(temp, index)[1]}
+						width="15"
+						height="15">
+						/
+					</text>
+				)
+			} else if (
+				grid.rightClickDown.includes(index) &&
+				!preFilled.includes(index) &&
+				values[index] === null &&
+				temp !== null
+			) {
+				tempPenc.push(
+					<text
+						key={index}
+						className="pencil-selector"
+						x={getPencilCoordinates(temp, index)[0]}
+						y={getPencilCoordinates(temp, index)[1]}
+						width="15"
+						height="15">
 						{temp}
 					</text>
 				)

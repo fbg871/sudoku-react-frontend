@@ -176,7 +176,7 @@
 }
 
 .sudoku-board {
-	background-color: rgb(61, 61, 61);
+	background-color: rgb(53, 52, 52);
 	padding: 2%;
 	border-radius: 5px 5px 0 0;
 }
@@ -188,4 +188,8 @@ text {
 	-moz-user-select: none; /* Firefox */
 	-ms-user-select: none; /* IE10+/Edge */
 	user-select: none; /* Standard */
+}
+
+.multi {
+	cursor: cell;
 }

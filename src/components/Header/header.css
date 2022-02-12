@@ -49,3 +49,9 @@
 .iconlight {
 	content: url('/src/assets/shaka_light.png');
 }
+
+.hand-button {
+	padding: 6px !important;
+	box-shadow: -10px -10px 20px rgba(50, 54, 63, 0.6),
+		-5px -5px 10px rgba(50, 54, 63, 0.9), 10px 10px 20px rgb(30, 33, 39);
+}

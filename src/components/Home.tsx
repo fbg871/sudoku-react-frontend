@@ -4,7 +4,7 @@ import './home.css'
 const Home = () => {
 	return (
 		<Container className="game-section" maxWidth="sm">
-			<Box className="sudoku-board">
+			<Box className="menu-board">
 				<button>Play Sudoku</button>
 			</Box>
 		</Container>

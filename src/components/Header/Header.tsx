@@ -9,14 +9,17 @@ import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
-import { Container, Link } from '@mui/material'
+import { Container, createTheme, Link } from '@mui/material'
 import SettingsIcon from '@mui/icons-material/Settings'
 
 const Header = () => {
+	const darkTheme = createTheme()
+
 	return (
-		<AppBar position="static">
+		<AppBar elevation={0} position="static">
 			<Toolbar className="header-bar">
 				<IconButton
+					className="hand-button"
 					size="large"
 					edge="start"
 					color="inherit"

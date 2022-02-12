@@ -17,7 +17,6 @@ import {
 } from '../slices/puzzleSlice'
 import { KeyboardEvent } from 'react'
 
-import { solved_flat } from '../sudoku_test'
 import { convertCodetoNumber } from '../convertCodetoNumber'
 import { getBlock, getCol, getRow } from '../helpers/conflicting'
 import { errorCheckOne } from '../helpers/errorCheck'

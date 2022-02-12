@@ -12,9 +12,12 @@ import '../puzzle.css'
 
 const PlayPuzzle = () => {
 	const userSettings = useSelector((state: RootState) => state.settings)
+	const selection = useSelector((state: RootState) => state.selection)
 
 	return (
-		<Container className="game-section" maxWidth="sm">
+		<Container
+			className={'game-section ' + (selection.multiSelect ? 'multi' : 'single')}
+			maxWidth="sm">
 			<Box className="sudoku-board">
 				<svg className="sudoku-game" viewBox="-5 -5 460 460">
 					{/* {gamesettings.prefillCell && <Prefill prefilled={sud.preFilled} />} */}
