@@ -29,7 +29,7 @@ const Header = () => {
 					<img className="icondark" width="55px" />
 				</IconButton>
 				<Container className="logo">
-					<Link href="/" underline="none">
+					<Link href="/create" underline="none">
 						<Typography className="title" variant="h3">
 							s u d o k u
 						</Typography>

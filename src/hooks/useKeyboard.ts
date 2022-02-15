@@ -22,9 +22,21 @@ import { getBlock, getCol, getRow } from '../helpers/conflicting'
 import { errorCheckOne } from '../helpers/errorCheck'
 
 const useKeyboard = () => {
-	const selection = useSelector((state: RootState) => state.selection)
-	const puzzle = useSelector((state: RootState) => state.puzzle)
-	const settings = useSelector((state: RootState) => state.settings)
+	// From settings slice
+	const autoRemove = useSelector((state: RootState) => state.settings)
+	// From selection slice
+	const selected = useSelector((state: RootState) => state.selection.selected)
+	const related = useSelector((state: RootState) => state.selection.related)
+	// From puzzle slice
+	const prefilled = useSelector((state: RootState) => state.puzzle.puzzle.prefilled)
+	// From progress slice
+	const values = useSelector((state: RootState) => state.puzzle.progress.values)
+	const pencilmarks = useSelector(
+		(state: RootState) => state.puzzle.progress.pencilmarks
+	)
+	const errorIndex = useSelector(
+		(state: RootState) => state.puzzle.progress.errorIndex
+	)
 
 	const dispatch = useDispatch()
 
@@ -46,8 +58,8 @@ const useKeyboard = () => {
 	}
 
 	const handleKeyboard = (event: KeyboardEvent<SVGRectElement>) => {
-		let endIndex = selection.selected.length - 1
-		let last = selection.selected[endIndex]
+		let endIndex = selected.length - 1
+		let last = selected[endIndex]
 
 		switch (event.code) {
 			case 'Digit1':
@@ -61,48 +73,37 @@ const useKeyboard = () => {
 			case 'Digit9':
 				const value = convertCodetoNumber(event.code)
 
-				if (
-					selection.selected.length === 1 &&
-					!puzzle.puzzle.prefilled.includes(selection.selected[0])
-				) {
-					if (
-						!puzzle.progress.error ||
-						(puzzle.progress.error &&
-							puzzle.progress.errorIndex === selection.selected[0])
-					) {
+				if (selected.length === 1 && !prefilled.includes(selected[0])) {
+					if (errorIndex !== -1 || errorIndex === selected[0]) {
 						if (event.shiftKey) {
-							if (puzzle.progress.pencilmarks[selection.selected[0]].length === 0) {
-								dispatch(addPencilMarks([selection.selected[0], [value]]))
+							if (pencilmarks[selected[0]].length === 0) {
+								dispatch(addPencilMarks([selected[0], [value]]))
 							} else {
-								if (
-									!puzzle.progress.pencilmarks[selection.selected[0]].includes(value)
-								) {
-									dispatch(appendToPencilMarks([selection.selected[0], value]))
+								if (!pencilmarks[selected[0]].includes(value)) {
+									dispatch(appendToPencilMarks([selected[0], value]))
 								} else {
-									dispatch(removeFromPencilMarks([selection.selected[0], value]))
+									dispatch(removeFromPencilMarks([selected[0], value]))
 								}
 							}
 						} else {
-							if (settings.autoRemove) {
-								autoRemovePencilmarks(value, selection.selected[0])
+							if (autoRemove) {
+								autoRemovePencilmarks(value, selected[0])
 							}
-							dispatch(addValueAtIndex([selection.selected[0], value]))
+							dispatch(addValueAtIndex([selected[0], value]))
 							dispatch(purgeRelated())
-							if (
-								errorCheckOne(value, selection.selected[0], puzzle.progress.values)
-							) {
-								dispatch(setError(selection.selected[0]))
+							if (errorCheckOne(value, selected[0], values)) {
+								dispatch(setError(selected[0]))
 							} else {
 								dispatch(reverseError())
 							}
 							if (value !== null) {
-								for (let i = 0; i < puzzle.progress.values.length; i++) {
+								for (let i = 0; i < values.length; i++) {
 									// funky business going on here. enter same value
 									// twice and see
 									if (
-										selection.selected[0] !== i &&
-										value === puzzle.progress.values[i] &&
-										!selection.related.includes(i)
+										selected[0] !== i &&
+										value === values[i] &&
+										!related.includes(i)
 									) {
 										dispatch(addToRelated(i))
 									}
@@ -112,18 +113,16 @@ const useKeyboard = () => {
 							}
 						}
 					}
-				} else if (selection.selected.length > 1) {
-					for (let i = 0; i < selection.selected.length; i++) {
-						if (!puzzle.puzzle.prefilled.includes(selection.selected[i])) {
-							if (puzzle.progress.pencilmarks[selection.selected[i]].length === 0) {
-								dispatch(addPencilMarks([selection.selected[i], [value]]))
+				} else if (selected.length > 1) {
+					for (let i = 0; i < selected.length; i++) {
+						if (!prefilled.includes(selected[i])) {
+							if (pencilmarks[selected[i]].length === 0) {
+								dispatch(addPencilMarks([selected[i], [value]]))
 							} else {
-								if (
-									!puzzle.progress.pencilmarks[selection.selected[i]].includes(value)
-								) {
-									dispatch(appendToPencilMarks([selection.selected[i], value]))
+								if (!pencilmarks[selected[i]].includes(value)) {
+									dispatch(appendToPencilMarks([selected[i], value]))
 								} else {
-									dispatch(removeFromPencilMarks([selection.selected[i], value]))
+									dispatch(removeFromPencilMarks([selected[i], value]))
 								}
 							}
 						}
@@ -133,22 +132,16 @@ const useKeyboard = () => {
 				break
 			case 'Delete':
 			case 'Backspace':
-				if (
-					selection.selected.length === 1 &&
-					!puzzle.puzzle.prefilled.includes(selection.selected[0])
-				) {
-					if (
-						puzzle.progress.error &&
-						puzzle.progress.errorIndex === selection.selected[0]
-					) {
+				if (selected.length === 1 && !prefilled.includes(selected[0])) {
+					if (errorIndex === selected[0]) {
 						dispatch(reverseError())
 					}
 
-					dispatch(deleteAll(selection.selected[0]))
-				} else if (selection.selected.length > 1) {
-					for (let i = 0; i < selection.selected.length; i++) {
-						if (!puzzle.puzzle.prefilled.includes(selection.selected[i])) {
-							dispatch(deleteAll(selection.selected[i]))
+					dispatch(deleteAll(selected[0]))
+				} else if (selected.length > 1) {
+					for (let i = 0; i < selected.length; i++) {
+						if (!prefilled.includes(selected[i])) {
+							dispatch(deleteAll(selected[i]))
 						}
 					}
 				}
@@ -156,17 +149,17 @@ const useKeyboard = () => {
 				break
 			case 'ArrowRight':
 				if (last % 9 !== 8) {
-					if (event.shiftKey && !selection.selected.includes(last + 1)) {
+					if (event.shiftKey && !selected.includes(last + 1)) {
 						dispatch(addToSelected(last + 1))
 						dispatch(purgeRelated())
 					} else {
 						dispatch(resetSelected([last + 1]))
-						if (puzzle.progress.values[last + 1] !== null) {
-							for (let i = 0; i < puzzle.progress.values.length; i++) {
+						if (values[last + 1] !== null) {
+							for (let i = 0; i < values.length; i++) {
 								if (
 									last + 1 !== i &&
-									puzzle.progress.values[last + 1] === puzzle.progress.values[i] &&
-									!selection.related.includes(i)
+									values[last + 1] === values[i] &&
+									!related.includes(i)
 								) {
 									dispatch(addToRelated(i))
 								}
@@ -179,17 +172,17 @@ const useKeyboard = () => {
 				break
 			case 'ArrowLeft':
 				if (last % 9 !== 0) {
-					if (event.shiftKey && !selection.selected.includes(last - 1)) {
+					if (event.shiftKey && !selected.includes(last - 1)) {
 						dispatch(addToSelected(last - 1))
 						dispatch(purgeRelated())
 					} else {
 						dispatch(resetSelected([last - 1]))
-						if (puzzle.progress.values[last - 1] !== null) {
-							for (let i = 0; i < puzzle.progress.values.length; i++) {
+						if (values[last - 1] !== null) {
+							for (let i = 0; i < values.length; i++) {
 								if (
 									last - 1 !== i &&
-									puzzle.progress.values[last - 1] === puzzle.progress.values[i] &&
-									!selection.related.includes(i)
+									values[last - 1] === values[i] &&
+									!related.includes(i)
 								) {
 									dispatch(addToRelated(i))
 								}
@@ -202,17 +195,17 @@ const useKeyboard = () => {
 				break
 			case 'ArrowUp':
 				if (last > 8) {
-					if (event.shiftKey && !selection.selected.includes(last - 9)) {
+					if (event.shiftKey && !selected.includes(last - 9)) {
 						dispatch(addToSelected(last - 9))
 						dispatch(purgeRelated())
 					} else {
 						dispatch(resetSelected([last - 9]))
-						if (puzzle.progress.values[last - 9] !== null) {
-							for (let i = 0; i < puzzle.progress.values.length; i++) {
+						if (values[last - 9] !== null) {
+							for (let i = 0; i < values.length; i++) {
 								if (
 									last - 9 !== i &&
-									puzzle.progress.values[last - 9] === puzzle.progress.values[i] &&
-									!selection.related.includes(i)
+									values[last - 9] === values[i] &&
+									!related.includes(i)
 								) {
 									dispatch(addToRelated(i))
 								}
@@ -225,17 +218,17 @@ const useKeyboard = () => {
 				break
 			case 'ArrowDown':
 				if (last < 72) {
-					if (event.shiftKey && !selection.selected.includes(last + 9)) {
+					if (event.shiftKey && !selected.includes(last + 9)) {
 						dispatch(addToSelected(last + 9))
 						dispatch(purgeRelated())
 					} else {
 						dispatch(resetSelected([last + 9]))
-						if (puzzle.progress.values[last + 9] !== null) {
-							for (let i = 0; i < puzzle.progress.values.length; i++) {
+						if (values[last + 9] !== null) {
+							for (let i = 0; i < values.length; i++) {
 								if (
 									last + 9 !== i &&
-									puzzle.progress.values[last + 9] === puzzle.progress.values[i] &&
-									!selection.related.includes(i)
+									values[last + 9] === values[i] &&
+									!related.includes(i)
 								) {
 									dispatch(addToRelated(i))
 								}

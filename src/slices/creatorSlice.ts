@@ -3,9 +3,6 @@ import { solved_flat, sudoku_flat } from '../sudoku_test'
 
 interface CreatorState {
 	values: (number | null)[]
-	creator: string
-	difficulty: number
-	isVariant: boolean
 
 	thermo: number[][] | null
 	arrow: number[][] | null
@@ -99,10 +96,7 @@ export const initialState: CreatorState = {
 		null,
 		null,
 	],
-	creator: '',
-	difficulty: 0,
 
-	isVariant: false,
 	thermo: null,
 	arrow: null,
 	palindrome: null,
@@ -120,6 +114,67 @@ export const creatorSlice = createSlice({
 		},
 		deleteAll: (state, action) => {
 			state.values[action.payload] = null
+		},
+		addThermo: (state, action) => {
+			if (state.thermo === null) {
+				state.thermo = [action.payload]
+			} else {
+				state.thermo.push(action.payload)
+			}
+		},
+		removeThermo: (state, action) => {
+			if (state.thermo !== null) {
+				state.thermo = state.thermo.filter(
+					(thermometer) => thermometer !== action.payload
+				)
+			}
+		},
+		addArrow: (state, action) => {
+			if (state.arrow === null) {
+				state.arrow = [action.payload]
+			} else {
+				state.arrow.push(action.payload)
+			}
+		},
+		removeArrow: (state, action) => {
+			if (state.arrow !== null) {
+				state.arrow = state.arrow.filter(
+					(thermometer) => thermometer !== action.payload
+				)
+			}
+		},
+		addPalindrome: (state, action) => {
+			if (state.palindrome === null) {
+				state.palindrome = [action.payload]
+			} else {
+				state.palindrome.push(action.payload)
+			}
+		},
+		removePalindrome: (state, action) => {
+			if (state.palindrome !== null) {
+				state.palindrome = state.palindrome.filter(
+					(thermometer) => thermometer !== action.payload
+				)
+			}
+		},
+
+		toggleDiagonal: (state, action) => {
+			state.diagonal = !state.diagonal
+		},
+
+		addKropkiHollow: (state, action) => {
+			if (state.arrow === null) {
+				state.arrow = [action.payload]
+			} else {
+				state.arrow.push(action.payload)
+			}
+		},
+		removeKropkiHollow: (state, action) => {
+			if (state.arrow !== null) {
+				state.arrow = state.arrow.filter(
+					(thermometer) => thermometer !== action.payload
+				)
+			}
 		},
 	},
 })

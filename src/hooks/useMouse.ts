@@ -26,11 +26,32 @@ import { MouseEvent, useState, WheelEvent } from 'react'
 import { getBlock, getCol, getRow } from '../helpers/conflicting'
 
 const useMouse = () => {
-	const prefilled = useSelector((state: RootState) => state.puzzle.puzzle.prefilled)
+	// From settings slice
+	const autoRemove = useSelector((state: RootState) => state.settings)
+	// From selection slice
+	const selected = useSelector((state: RootState) => state.selection.selected)
+	const related = useSelector((state: RootState) => state.selection.related)
+	const rightClickDown = useSelector(
+		(state: RootState) => state.selection.rightClickDown
+	)
+	const leftClickDown = useSelector(
+		(state: RootState) => state.selection.leftClickDown
+	)
+	const multiSelect = useSelector((state: RootState) => state.selection.multiSelect)
 
-	const selection = useSelector((state: RootState) => state.selection)
-	const puzzle = useSelector((state: RootState) => state.puzzle)
-	const settings = useSelector((state: RootState) => state.settings)
+	// From puzzle slice
+	const prefilled = useSelector((state: RootState) => state.puzzle.puzzle.prefilled)
+	// From progress slice
+	const values = useSelector((state: RootState) => state.puzzle.progress.values)
+	const pencilmarks = useSelector(
+		(state: RootState) => state.puzzle.progress.pencilmarks
+	)
+	const errorIndex = useSelector(
+		(state: RootState) => state.puzzle.progress.errorIndex
+	)
+	const temporaryValues = useSelector(
+		(state: RootState) => state.puzzle.progress.temporaryValues
+	)
 
 	const dispatch = useDispatch()
 
@@ -52,34 +73,26 @@ const useMouse = () => {
 	}
 
 	const handleScroll = (event: WheelEvent<SVGRectElement>) => {
-		if (!selection.leftClickDown && selection.rightClickDown.length === 0) {
+		if (!leftClickDown && rightClickDown.length === 0) {
 			dispatch(toggleMultiSelect())
 		}
-		for (let i = 0; i < selection.rightClickDown.length; i++) {
-			if (puzzle.progress.values[selection.rightClickDown[i]] === null) {
+		for (let i = 0; i < rightClickDown.length; i++) {
+			if (values[rightClickDown[i]] === null) {
 				if (event.deltaY < 0) {
-					if (
-						puzzle.progress.temporaryValues[selection.rightClickDown[i]] === null
-					) {
-						dispatch(addTemporary([selection.rightClickDown[i], 1]))
-					} else if (
-						puzzle.progress.temporaryValues[selection.rightClickDown[i]] === 9
-					) {
-						dispatch(deleteTemporary(selection.rightClickDown[i]))
+					if (temporaryValues[rightClickDown[i]] === null) {
+						dispatch(addTemporary([rightClickDown[i], 1]))
+					} else if (temporaryValues[rightClickDown[i]] === 9) {
+						dispatch(deleteTemporary(rightClickDown[i]))
 					} else {
-						dispatch(incrementTemporary(selection.rightClickDown[i]))
+						dispatch(incrementTemporary(rightClickDown[i]))
 					}
 				} else {
-					if (
-						puzzle.progress.temporaryValues[selection.rightClickDown[i]] === null
-					) {
-						dispatch(addTemporary([selection.rightClickDown[i], 9]))
-					} else if (
-						puzzle.progress.temporaryValues[selection.rightClickDown[i]] === 1
-					) {
-						dispatch(deleteTemporary(selection.rightClickDown[i]))
+					if (temporaryValues[rightClickDown[i]] === null) {
+						dispatch(addTemporary([rightClickDown[i], 9]))
+					} else if (temporaryValues[rightClickDown[i]] === 1) {
+						dispatch(deleteTemporary(rightClickDown[i]))
 					} else {
-						dispatch(decrementTemporary(selection.rightClickDown[i]))
+						dispatch(decrementTemporary(rightClickDown[i]))
 					}
 				}
 			}
@@ -91,19 +104,19 @@ const useMouse = () => {
 			case 0:
 				console.log(index)
 				dispatch(purgeRelated())
-				if (event.shiftKey || event.ctrlKey || selection.multiSelect) {
-					if (!selection.selected.includes(index)) {
+				if (event.shiftKey || event.ctrlKey || multiSelect) {
+					if (!selected.includes(index)) {
 						dispatch(addToSelected(index))
 					}
 					dispatch(setLeftClickDown(true))
 				} else {
 					dispatch(resetSelected([index]))
-					if (puzzle.progress.values[index] !== null) {
-						for (let i = 0; i < puzzle.progress.values.length; i++) {
+					if (values[index] !== null) {
+						for (let i = 0; i < values.length; i++) {
 							if (
 								index !== i &&
-								puzzle.progress.values[index] === puzzle.progress.values[i] &&
-								!selection.related.includes(i)
+								values[index] === values[i] &&
+								!related.includes(i)
 							) {
 								dispatch(addToRelated(i))
 							}
@@ -117,23 +130,20 @@ const useMouse = () => {
 				break
 			// Middle click
 			case 1:
-				for (let i = 0; i < selection.selected.length; i++) {
-					if (!prefilled.includes(selection.selected[i])) {
-						dispatch(deleteAll(selection.selected[i]))
+				for (let i = 0; i < selected.length; i++) {
+					if (!prefilled.includes(selected[i])) {
+						dispatch(deleteAll(selected[i]))
 					}
 				}
 				break
 			// Right click
 			case 2:
 				event.preventDefault()
-				for (let i = 0; i < selection.selected.length; i++) {
-					if (!prefilled.includes(selection.selected[i])) {
-						dispatch(setRightClick(selection.selected[i]))
-						if (
-							puzzle.progress.values[selection.selected[i]] !== null &&
-							selection.selected.length === 1
-						) {
-							dispatch(swapValueWithTemporary(selection.selected[i]))
+				for (let i = 0; i < selected.length; i++) {
+					if (!prefilled.includes(selected[i])) {
+						dispatch(setRightClick(selected[i]))
+						if (values[selected[i]] !== null && selected.length === 1) {
+							dispatch(swapValueWithTemporary(selected[i]))
 						}
 					}
 				}
@@ -141,7 +151,7 @@ const useMouse = () => {
 		}
 	}
 	const handleMouseMove = (index: number) => {
-		if (selection.leftClickDown && !selection.selected.includes(index)) {
+		if (leftClickDown && !selected.includes(index)) {
 			dispatch(addToSelected(index))
 			dispatch(purgeRelated())
 		}
@@ -158,49 +168,42 @@ const useMouse = () => {
 			case 2:
 				event.preventDefault()
 				if (
-					selection.rightClickDown.length === 1 &&
-					puzzle.progress.pencilmarks[selection.rightClickDown[0]].length === 0
+					rightClickDown.length === 1 &&
+					pencilmarks[rightClickDown[0]].length === 0
 				) {
-					if (
-						settings.autoRemove &&
-						puzzle.progress.temporaryValues[selection.rightClickDown[0]]
-					) {
+					if (autoRemove && temporaryValues[rightClickDown[0]]) {
 						autoRemovePencilmarks(
-							puzzle.progress.temporaryValues[selection.rightClickDown[0]]!,
-							selection.rightClickDown[0]
+							temporaryValues[rightClickDown[0]]!,
+							rightClickDown[0]
 						)
 					}
-					dispatch(swapTemporaryWithValue(selection.rightClickDown[0]))
+					dispatch(swapTemporaryWithValue(rightClickDown[0]))
 				} else if (
-					selection.rightClickDown.length === 1 &&
-					puzzle.progress.pencilmarks[selection.rightClickDown[0]].length > 0
+					rightClickDown.length === 1 &&
+					pencilmarks[rightClickDown[0]].length > 0
 				) {
-					if (
-						puzzle.progress.temporaryValues[selection.rightClickDown[0]] !== null
-					) {
+					if (temporaryValues[rightClickDown[0]] !== null) {
 						if (
-							!puzzle.progress.pencilmarks[selection.rightClickDown[0]].includes(
-								puzzle.progress.temporaryValues[selection.rightClickDown[0]]!
+							!pencilmarks[rightClickDown[0]].includes(
+								temporaryValues[rightClickDown[0]]!
 							)
 						) {
-							dispatch(addTemporaryToPencil(selection.rightClickDown[0]))
+							dispatch(addTemporaryToPencil(rightClickDown[0]))
 						} else {
-							dispatch(removeTemporaryFromPencil(selection.rightClickDown[0]))
+							dispatch(removeTemporaryFromPencil(rightClickDown[0]))
 						}
 					}
-				} else if (selection.rightClickDown.length > 1) {
-					for (let i = 0; i < selection.rightClickDown.length; i++) {
-						if (
-							puzzle.progress.temporaryValues[selection.rightClickDown[i]] !== null
-						) {
+				} else if (rightClickDown.length > 1) {
+					for (let i = 0; i < rightClickDown.length; i++) {
+						if (temporaryValues[rightClickDown[i]] !== null) {
 							if (
-								!puzzle.progress.pencilmarks[selection.rightClickDown[i]].includes(
-									puzzle.progress.temporaryValues[selection.rightClickDown[i]]!
+								!pencilmarks[rightClickDown[i]].includes(
+									temporaryValues[rightClickDown[i]]!
 								)
 							) {
-								dispatch(addTemporaryToPencil(selection.rightClickDown[i]))
+								dispatch(addTemporaryToPencil(rightClickDown[i]))
 							} else {
-								dispatch(removeTemporaryFromPencil(selection.rightClickDown[i]))
+								dispatch(removeTemporaryFromPencil(rightClickDown[i]))
 							}
 						}
 					}

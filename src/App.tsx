@@ -7,6 +7,7 @@ import PlayPuzzle from './components/Puzzle/PlayPuzzle/PlayPuzzle'
 import { Provider } from 'react-redux'
 import { store } from './store'
 import Home from './components/Home'
+import PuzzleCreator from './components/Puzzle/CreatePuzzle/PuzzleCreator'
 
 function App() {
 	return (
@@ -18,6 +19,7 @@ function App() {
 						<Routes>
 							<Route path="/" element={<Home />} />
 							<Route path="/play" element={<PlayPuzzle />} />
+							<Route path="/create" element={<PuzzleCreator />} />
 						</Routes>
 					</BrowserRouter>
 				</Provider>
