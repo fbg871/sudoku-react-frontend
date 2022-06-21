@@ -1,25 +1,41 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { solved_flat, sudoku_flat } from '../sudoku_test'
 
-interface PuzzleState {
+export interface PurePuzzle {
+	values: (number | null)[]
+	solution: number[]
+	created_at: string
+	user_id: string
+	prefilled: number[]
+	thermo: number[][]
+	arrow: number[][]
+	palindrome: number[][]
+	diagonal: boolean
+	kropki: number[]
+}
+
+export interface PuzzleState {
 	puzzle: {
 		values: (number | null)[]
 		solution: number[]
-		uid: string
-		difficulty: number
-		likes: number
+		user_id: string
+		created_at: string
 		prefilled: number[]
+		thermo: number[][]
+		arrow: number[][]
+		palindrome: number[][]
+		diagonal: boolean
+		kropki: number[][]
 	}
 	progress: {
 		values: (number | null)[]
-		error: boolean
 		errorIndex: number
 		temporaryValues: (number | null)[]
 		pencilmarks: number[][]
 	}
 }
 
-const createPref = () => {
+export const createPref = () => {
 	let arr: number[] = []
 	for (let i = 0; i < 81; i++) {
 		if (sudoku_flat[i] !== null) {
@@ -32,15 +48,18 @@ const createPref = () => {
 export const initialState: PuzzleState = {
 	puzzle: {
 		values: sudoku_flat,
-		solution: solved_flat,
-		uid: 'Q5EfUnV9w8SXshKQBs8NeZO8Sd72',
-		difficulty: 7,
-		likes: 0,
-		prefilled: createPref(),
+		solution: [],
+		user_id: 'Q5EfUnV9w8SXshKQBs8NeZO8Sd72',
+		created_at: 'none',
+		prefilled: [],
+		thermo: [],
+		arrow: [],
+		palindrome: [],
+		diagonal: false,
+		kropki: [],
 	},
 	progress: {
-		values: sudoku_flat,
-		error: false,
+		values: new Array(81).fill(null),
 		errorIndex: -1,
 		temporaryValues: new Array(81).fill(null),
 		pencilmarks: new Array(81).fill([]),
@@ -114,11 +133,9 @@ export const puzzleSlice = createSlice({
 			state.progress.temporaryValues[action.payload] = null
 		},
 		setError: (state, action) => {
-			state.progress.error = true
 			state.progress.errorIndex = action.payload
 		},
 		reverseError: (state) => {
-			state.progress.error = false
 			state.progress.errorIndex = -1
 		},
 	},

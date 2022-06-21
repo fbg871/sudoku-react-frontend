@@ -1,8 +1,8 @@
-const getRow = (index: number) => {
+const getCol = (index: number) => {
 	return index % 9
 }
 
-const getCol = (index: number) => {
+const getRow = (index: number) => {
 	return Math.floor(index / 9)
 }
 

@@ -1,0 +1,30 @@
+.palindrome {
+	stroke: rgb(194, 194, 194);
+	stroke-width: 7;
+}
+
+.thermo {
+	fill: rgb(138, 179, 255);
+	stroke: rgb(138, 179, 255);
+}
+
+.arrow {
+	fill: transparent;
+	stroke: rgb(218, 110, 110);
+	stroke-width: 2px;
+}
+
+.hollow {
+	fill: rgb(61, 61, 61);
+	stroke: rgb(181, 253, 181);
+	stroke-width: 2px;
+}
+
+.solid {
+	fill: rgb(181, 253, 181);
+	stroke: rgb(181, 253, 181);
+	stroke-width: 2px;
+}
+.diagonal {
+	stroke: rgb(241, 235, 173);
+}

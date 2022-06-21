@@ -1,32 +1,43 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../store'
 import {
-	addToRelated,
+	addValueAtIndex,
+	deleteAll,
 	addToSelected,
-	purgeRelated,
 	resetSelected,
 	setRightClick,
 	setLeftClickDown,
 	purgeRightClick,
-} from '../slices/selectionSlice'
-import { addValueAtIndex, deleteAll } from '../slices/creatorSlice'
+	addThermo,
+	toggleDiagonal,
+	addArrow,
+	addPalindrome,
+} from '../slices/creatorSlice'
 import { MouseEvent, useState, WheelEvent, KeyboardEvent, useEffect } from 'react'
 
 import { convertCodetoNumber } from '../convertCodetoNumber'
+import { checkValidPalindrome, checkValidThermo } from '../helpers/variantCheck'
 
 const useCreator = () => {
-	const selection = useSelector((state: RootState) => state.selection)
 	const creator = useSelector((state: RootState) => state.creator)
 
 	const dispatch = useDispatch()
 
-	useEffect(() => {
-		console.log(creator.values)
-	}, [creator.values])
+	const handleVariant = (type: string) => {
+		if (type === 'thermo' && checkValidThermo(creator.selected)) {
+			dispatch(addThermo(creator.selected))
+		} else if (type === 'diagonal') {
+			dispatch(toggleDiagonal())
+		} else if (type === 'arrow') {
+			dispatch(addArrow(creator.selected))
+		} else if (type === 'palindrome' && checkValidPalindrome(creator.selected)) {
+			dispatch(addPalindrome(creator.selected))
+		}
+	}
 
-	const handleKeyboard = (event: KeyboardEvent<SVGRectElement>) => {
-		let endIndex = selection.selected.length - 1
-		let last = selection.selected[endIndex]
+	const handleKeyboard2 = (event: KeyboardEvent<SVGRectElement>) => {
+		let endIndex = creator.selected.length - 1
+		let last = creator.selected[endIndex]
 
 		switch (event.code) {
 			case 'Digit1':
@@ -40,24 +51,24 @@ const useCreator = () => {
 			case 'Digit9':
 				const value = convertCodetoNumber(event.code)
 
-				if (selection.selected.length === 1) {
-					dispatch(addValueAtIndex([selection.selected[0], value]))
+				if (creator.selected.length === 1) {
+					dispatch(addValueAtIndex([creator.selected[0], value]))
 				}
 
 				break
 			case 'Delete':
 			case 'Backspace':
-				if (selection.selected.length === 1) {
-					dispatch(deleteAll(selection.selected[0]))
-				} else if (selection.selected.length > 1) {
-					for (let i = 0; i < selection.selected.length; i++) {
-						dispatch(deleteAll(selection.selected[i]))
+				if (creator.selected.length === 1) {
+					dispatch(deleteAll(creator.selected[0]))
+				} else if (creator.selected.length > 1) {
+					for (let i = 0; i < creator.selected.length; i++) {
+						dispatch(deleteAll(creator.selected[i]))
 					}
 				}
 				break
 			case 'ArrowRight':
 				if (last % 9 !== 8) {
-					if (event.shiftKey && !selection.selected.includes(last + 1)) {
+					if (event.shiftKey && !creator.selected.includes(last + 1)) {
 						dispatch(addToSelected(last + 1))
 					} else {
 						dispatch(resetSelected([last + 1]))
@@ -66,9 +77,8 @@ const useCreator = () => {
 				break
 			case 'ArrowLeft':
 				if (last % 9 !== 0) {
-					if (event.shiftKey && !selection.selected.includes(last - 1)) {
+					if (event.shiftKey && !creator.selected.includes(last - 1)) {
 						dispatch(addToSelected(last - 1))
-						dispatch(purgeRelated())
 					} else {
 						dispatch(resetSelected([last - 1]))
 					}
@@ -76,7 +86,7 @@ const useCreator = () => {
 				break
 			case 'ArrowUp':
 				if (last > 8) {
-					if (event.shiftKey && !selection.selected.includes(last - 9)) {
+					if (event.shiftKey && !creator.selected.includes(last - 9)) {
 						dispatch(addToSelected(last - 9))
 					} else {
 						dispatch(resetSelected([last - 9]))
@@ -85,7 +95,7 @@ const useCreator = () => {
 				break
 			case 'ArrowDown':
 				if (last < 72) {
-					if (event.shiftKey && !selection.selected.includes(last + 9)) {
+					if (event.shiftKey && !creator.selected.includes(last + 9)) {
 						dispatch(addToSelected(last + 9))
 					} else {
 						dispatch(resetSelected([last + 9]))
@@ -95,58 +105,41 @@ const useCreator = () => {
 		}
 	}
 
-	const handleMouseDown = (event: MouseEvent<SVGRectElement>, index: number) => {
+	const handleMouseDown2 = (event: MouseEvent<SVGRectElement>, index: number) => {
 		switch (event.button) {
 			// Left click
 			case 0:
-				console.log(index)
-				dispatch(purgeRelated())
 				if (event.shiftKey || event.ctrlKey) {
-					if (!selection.selected.includes(index)) {
+					if (!creator.selected.includes(index)) {
 						dispatch(addToSelected(index))
 					}
 					dispatch(setLeftClickDown(true))
 				} else {
 					dispatch(resetSelected([index]))
-					if (creator.values[index] !== null) {
-						for (let i = 0; i < creator.values.length; i++) {
-							if (
-								index !== i &&
-								creator.values[index] === creator.values[i] &&
-								!selection.related.includes(i)
-							) {
-								dispatch(addToRelated(i))
-							}
-						}
-					} else {
-						dispatch(purgeRelated())
-					}
-
 					dispatch(setLeftClickDown(true))
 				}
 				break
 			// Middle click
 			case 1:
-				for (let i = 0; i < selection.selected.length; i++) {
-					dispatch(deleteAll(selection.selected[i]))
+				for (let i = 0; i < creator.selected.length; i++) {
+					dispatch(deleteAll(creator.selected[i]))
 				}
 				break
 			// Right click
 			case 2:
 				event.preventDefault()
-				for (let i = 0; i < selection.selected.length; i++) {
-					dispatch(setRightClick(selection.selected[i]))
+				for (let i = 0; i < creator.selected.length; i++) {
+					dispatch(setRightClick(creator.selected[i]))
 				}
 				break
 		}
 	}
-	const handleMouseMove = (index: number) => {
-		if (selection.leftClickDown && !selection.selected.includes(index)) {
+	const handleMouseMove2 = (index: number) => {
+		if (creator.leftClickDown && !creator.selected.includes(index)) {
 			dispatch(addToSelected(index))
-			dispatch(purgeRelated())
 		}
 	}
-	const handleMouseUp = (
+	const handleMouseUp2 = (
 		event: MouseEvent<SVGRectElement> | MouseEvent<SVGCircleElement>
 	) => {
 		switch (event.button) {
@@ -161,7 +154,13 @@ const useCreator = () => {
 				break
 		}
 	}
-	return { handleMouseDown, handleMouseUp, handleMouseMove, handleKeyboard }
+	return {
+		handleVariant,
+		handleMouseDown2,
+		handleMouseUp2,
+		handleMouseMove2,
+		handleKeyboard2,
+	}
 }
 
 export default useCreator

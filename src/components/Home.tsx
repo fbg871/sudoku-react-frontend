@@ -1,12 +1,13 @@
 import { Box, Container } from '@mui/material'
 import './home.css'
+import Loading from './Loading/Loading'
+import PuzzleMenu from './Puzzle/PuzzleMenu'
 
 const Home = () => {
 	return (
 		<Container className="game-section" maxWidth="sm">
-			<Box className="menu-board">
-				<button>Play Sudoku</button>
-			</Box>
+			<PuzzleMenu />
+			{/* <Loading /> */}
 		</Container>
 	)
 }

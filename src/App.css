@@ -1,5 +1,15 @@
+:root {
+	--light-bg-color: white;
+	--light-primary-color: white;
+	--light-secondary-color: white;
+
+	--dark-bg-color: #262930;
+	--dark-primary-color: black;
+	--dark-secondary-color: black;
+}
+
 .app-backdrop {
 	height: 100%;
 	width: 100%;
-	background-color: #262930;
+	background-color: var(--dark-bg-color);
 }

@@ -2,31 +2,105 @@
 	background-color: rgb(40, 44, 52);
 	padding: 2%;
 	border-radius: 5px 5px 0 0;
+	display: grid;
+	place-items: center;
 
-	height: 70vh;
+	min-height: 80vh;
 }
 
-button {
-	padding: 1.5em 5em;
-	background: rgb(40, 44, 52);
-	border: none;
-	border-radius: 1.5rem;
+@font-face {
+	font-family: 'NeonderThaw';
+	src: local('NeonderThaw'), url(../fonts/Neonderthaw-Regular.ttf) format('woff');
+	/* other formats include: 'woff2', 'truetype, 'opentype',
+							  'embedded-opentype', and 'svg' */
+}
+
+.menu-board {
+	background-color: rgb(40, 44, 52);
+	padding: 2%;
+	border-radius: 5px 5px 0 0;
+	display: grid;
+	place-items: center;
+
+	min-height: 80vh;
+}
+
+.menu-button {
+	font-size: 2rem;
+	display: inline-block;
+	background: transparent;
 	color: rgb(255, 255, 255);
-	font-size: 1rem;
-	font-weight: 700;
-	font-family: Poppins;
-	letter-spacing: 0.2rem;
-	text-align: center;
-	outline: none;
 	cursor: pointer;
-	transition: 0.1s ease-in-out;
-	box-shadow: -10px -10px 20px rgba(50, 54, 63, 0.6),
-		-5px -5px 10px rgba(50, 54, 63, 0.9), 10px 10px 20px rgb(30, 33, 39);
+	font-family: sans-serif;
+	border: rgb(255, 255, 255) 4px solid;
+	padding: 0.2em 0.7em;
+	border-radius: 0.25em;
+
+	position: relative;
 }
-button:hover {
-	box-shadow: -5px -5px 12px #32363f, 5px 5px 12px rgb(30, 33, 39);
+
+.menu-button:hover {
+	background: white;
+	color: rgb(40, 44, 52);
 }
-button:active {
-	box-shadow: inset -10px -10px 20px rgba(255, 255, 255, 0.05),
-		inset 10px 10px 20px rgba(0, 0, 0, 0.2);
+
+.menu-button:active {
+	background: rgb(221, 221, 221);
 }
+
+/* 
+.neon-button {
+	font-size: 6rem;
+	display: inline-block;
+	background: transparent;
+	color: turquoise;
+	cursor: pointer;
+	font-family: 'NeonderThaw';
+	border: turquoise 4px solid;
+	padding: 0.2em 0.7em;
+	border-radius: 0.25em;
+
+	text-shadow: 0 0 0.5em turquoise, 0 0 0.125em white;
+
+	box-shadow: inset 0 0 0.5em turquoise, 0 0 0.5em turquoise;
+	position: relative;
+}
+
+.neon-button::before {
+	content: '';
+	position: absolute;
+	background: turquoise;
+	top: 100%;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+
+	transform: perspective(1em) rotateX(40deg) scale(1, 0.35);
+	filter: blur(0.75em);
+}
+
+.neon-button::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	border-radius: 0.25em;
+
+	box-shadow: 0 0 2em 0.25em turquoise;
+	opacity: 0;
+}
+
+.neon-button:hover,
+.neon-button:focus {
+	background: turquoise;
+	color: black;
+	text-shadow: none;
+}
+
+.neon-button:hover::after,
+.neon-button:focus::after {
+	opacity: 1;
+} */

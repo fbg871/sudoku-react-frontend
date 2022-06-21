@@ -1,114 +1,64 @@
-import { createSlice } from '@reduxjs/toolkit'
-import { solved_flat, sudoku_flat } from '../sudoku_test'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 interface CreatorState {
 	values: (number | null)[]
 
-	thermo: number[][] | null
-	arrow: number[][] | null
-	palindrome: number[][] | null
+	thermo: number[][]
+	arrow: number[][]
+	palindrome: number[][]
 	diagonal: boolean
-	kropki_hollow: number[][] | null
-	kropki_solid: number[][] | null
+	kropki_hollow: number[][]
+	kropki_solid: number[][]
+
+	selected: number[]
+	leftClickDown: boolean
+	rightClickDown: number[]
 }
 
 export const initialState: CreatorState = {
-	values: [
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-		null,
-	],
+	values: new Array(81).fill(null),
 
-	thermo: null,
-	arrow: null,
-	palindrome: null,
+	thermo: [],
+	arrow: [],
+	palindrome: [],
 	diagonal: false,
-	kropki_hollow: null,
-	kropki_solid: null,
+	kropki_hollow: [],
+	kropki_solid: [],
+
+	selected: [],
+	leftClickDown: false,
+	rightClickDown: [],
 }
 
 export const creatorSlice = createSlice({
 	name: 'creator',
 	initialState,
 	reducers: {
+		newCreation: (state) => {
+			state = initialState
+		},
+		resumeCreation: (state, action) => {
+			state = action.payload
+		},
+		addToSelected: (state, action: PayloadAction<number>) => {
+			state.selected.push(action.payload)
+		},
+		resetSelected: (state, action: PayloadAction<number[]>) => {
+			state.selected = action.payload
+			state.rightClickDown = []
+		},
+		setRightClick: (state, action) => {
+			state.rightClickDown.push(action.payload)
+		},
+		purgeRightClick: (state) => {
+			state.rightClickDown = []
+		},
+		removeAllSelected: (state) => {
+			state.selected = []
+		},
+		setLeftClickDown: (state, action) => {
+			state.leftClickDown = action.payload
+		},
 		addValueAtIndex: (state, action) => {
 			state.values[action.payload[0]] = action.payload[1]
 		},
@@ -116,69 +66,62 @@ export const creatorSlice = createSlice({
 			state.values[action.payload] = null
 		},
 		addThermo: (state, action) => {
-			if (state.thermo === null) {
-				state.thermo = [action.payload]
-			} else {
-				state.thermo.push(action.payload)
-			}
+			state.thermo.push(action.payload)
 		},
 		removeThermo: (state, action) => {
-			if (state.thermo !== null) {
-				state.thermo = state.thermo.filter(
-					(thermometer) => thermometer !== action.payload
-				)
-			}
+			state.thermo = state.thermo.filter(
+				(thermometer) => thermometer !== action.payload
+			)
 		},
 		addArrow: (state, action) => {
-			if (state.arrow === null) {
-				state.arrow = [action.payload]
-			} else {
-				state.arrow.push(action.payload)
-			}
+			state.arrow.push(action.payload)
 		},
 		removeArrow: (state, action) => {
-			if (state.arrow !== null) {
-				state.arrow = state.arrow.filter(
-					(thermometer) => thermometer !== action.payload
-				)
-			}
+			state.arrow = state.arrow.filter(
+				(thermometer) => thermometer !== action.payload
+			)
 		},
 		addPalindrome: (state, action) => {
-			if (state.palindrome === null) {
-				state.palindrome = [action.payload]
-			} else {
-				state.palindrome.push(action.payload)
-			}
+			state.palindrome.push(action.payload)
 		},
 		removePalindrome: (state, action) => {
-			if (state.palindrome !== null) {
-				state.palindrome = state.palindrome.filter(
-					(thermometer) => thermometer !== action.payload
-				)
-			}
+			state.palindrome = state.palindrome.filter(
+				(thermometer) => thermometer !== action.payload
+			)
 		},
 
-		toggleDiagonal: (state, action) => {
+		toggleDiagonal: (state) => {
 			state.diagonal = !state.diagonal
 		},
 
 		addKropkiHollow: (state, action) => {
-			if (state.arrow === null) {
-				state.arrow = [action.payload]
-			} else {
-				state.arrow.push(action.payload)
-			}
+			state.arrow.push(action.payload)
 		},
 		removeKropkiHollow: (state, action) => {
-			if (state.arrow !== null) {
-				state.arrow = state.arrow.filter(
-					(thermometer) => thermometer !== action.payload
-				)
-			}
+			state.arrow = state.arrow.filter(
+				(thermometer) => thermometer !== action.payload
+			)
 		},
 	},
 })
 
-export const { addValueAtIndex, deleteAll } = creatorSlice.actions
+export const {
+	addToSelected,
+	resetSelected,
+	setRightClick,
+	setLeftClickDown,
+	purgeRightClick,
+	addValueAtIndex,
+	deleteAll,
+	addArrow,
+	removeArrow,
+	addKropkiHollow,
+	removeKropkiHollow,
+	addPalindrome,
+	removePalindrome,
+	addThermo,
+	removeThermo,
+	toggleDiagonal,
+} = creatorSlice.actions
 
 export default creatorSlice.reducer

@@ -3,15 +3,33 @@ import { RootState } from '../../../store'
 
 // This component generates <rect>
 
-const Highlight = () => {
-	const grid = useSelector((state: RootState) => state.selection)
-	// const grid = useSelector((state: RootState) => state.persistedReducer.gridReducer)
+const Highlight = ({ createMode }: { createMode: boolean }) => {
+	const grid = useSelector((state: RootState) => {
+		if (createMode) {
+			return state.creator
+		} else {
+			return state.selection
+		}
+	})
 
-	const sud = useSelector((state: RootState) => state.puzzle.progress)
+	const errorIndex = useSelector((state: RootState) => {
+		if (!createMode) {
+			return state.puzzle.progress.errorIndex
+		}
+		return null
+	})
 
 	const highlightRelated = useSelector(
 		(state: RootState) => state.settings.highlightRelated
 	)
+
+	const relatedArray = useSelector((state: RootState) => {
+		if (!createMode) {
+			return state.selection.related
+		} else {
+			return null
+		}
+	})
 
 	let selected: JSX.Element[] = []
 	let rightclick: JSX.Element[] = []
@@ -42,8 +60,8 @@ const Highlight = () => {
 		)
 	})
 
-	if (highlightRelated) {
-		grid.related.forEach((rel, i) => {
+	if (highlightRelated && !createMode) {
+		relatedArray!.forEach((rel, i) => {
 			related.push(
 				<rect
 					key={i + 162}
@@ -61,12 +79,12 @@ const Highlight = () => {
 		<g className="selection">
 			{rightclick}
 			{selected}
-			{highlightRelated && related}
-			{sud.error && (
+			{!createMode && highlightRelated && related}
+			{errorIndex && errorIndex !== -1 && (
 				<rect
 					className="error"
-					y={Math.floor(sud.errorIndex / 9) * 50}
-					x={(sud.errorIndex % 9) * 50}
+					y={Math.floor(errorIndex / 9) * 50}
+					x={(errorIndex % 9) * 50}
 					width="50"
 					height="50"
 				/>

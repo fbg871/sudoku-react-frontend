@@ -3,6 +3,9 @@ import { useState } from 'react'
 import SettingsIcon from '@mui/icons-material/Settings'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import ShareIcon from '@mui/icons-material/Share'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../../store'
+import { setPuzzle } from '../../slices/puzzleSlice'
 const GameBar = () => {
 	const [value, setValue] = useState(0)
 
@@ -13,6 +16,10 @@ const GameBar = () => {
 	const handleClose = () => {
 		setOpen(false)
 	}
+
+	const dispatch = useDispatch()
+
+	const puzzle = useSelector((root: RootState) => root.puzzle)
 
 	return (
 		<>

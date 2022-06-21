@@ -74,7 +74,7 @@ const useKeyboard = () => {
 				const value = convertCodetoNumber(event.code)
 
 				if (selected.length === 1 && !prefilled.includes(selected[0])) {
-					if (errorIndex !== -1 || errorIndex === selected[0]) {
+					if (errorIndex === -1 || errorIndex === selected[0]) {
 						if (event.shiftKey) {
 							if (pencilmarks[selected[0]].length === 0) {
 								dispatch(addPencilMarks([selected[0], [value]]))

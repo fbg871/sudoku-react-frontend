@@ -20,7 +20,11 @@ const Numbers = ({ isFilled }: { isFilled: boolean }) => {
 					{val}
 				</text>
 			)
-		} else {
+		}
+	})
+
+	puzzle.puzzle.values.forEach((val, i) => {
+		if (val) {
 			if (isFilled) {
 				nums.push(
 					<text

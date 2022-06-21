@@ -15,13 +15,14 @@ import puzzleReducer from './slices/puzzleSlice'
 
 import creatorReducer from './slices/creatorSlice'
 import settingsReducer from './slices/settingsSlice'
+import userReducer from './slices/userSlice'
 
-// const persistConfig = {
-// 	key: 'root',
-// 	storage,
-// }
+const persistConfig = {
+	key: 'user',
+	storage,
+}
 
-// const persistedReducer = persistReducer(persistConfig, rootReducer)
+const persistedReducer = persistReducer(persistConfig, userReducer)
 
 export const store = configureStore({
 	reducer: {
@@ -30,6 +31,7 @@ export const store = configureStore({
 		puzzle: puzzleReducer,
 		creator: creatorReducer,
 		settings: settingsReducer,
+		user: persistedReducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware({

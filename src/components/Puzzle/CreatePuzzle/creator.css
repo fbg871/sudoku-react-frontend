@@ -1,0 +1,63 @@
+/* blah */
+.creator-section {
+	display: flex;
+	justify-content: center;
+	/* width: 100% !important;
+	max-width: 100% !important; */
+	padding-top: 1%;
+	padding-left: 5%;
+	padding-right: 5%;
+	max-height: 300px;
+}
+
+.game-grid {
+	display: grid;
+	grid-template-columns: 10fr 2fr;
+
+	width: min(95%, 70rem);
+}
+
+.sudoku-creator {
+	/* display: block; */
+	/* margin: auto;
+	width: 100%;
+	height: 100%; */
+	max-width: 600px;
+	font-family: 'Rubik';
+}
+
+.sudoku-board {
+	background-color: rgb(53, 52, 52);
+	padding: 2%;
+	border-radius: 5px 0 0 5px;
+	/* max-width: 500px; */
+}
+
+.multi {
+	cursor: cell;
+}
+
+.sidebar {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	background-color: rgb(44, 44, 44);
+	max-width: 200px;
+	border-radius: 0 5px 5px 0;
+	color: white;
+}
+[data-rightclick='true'] {
+	cursor: none;
+}
+
+.corner {
+	pointer-events: none;
+	fill: transparent;
+	outline: 0;
+}
+[data-activate='true'] {
+	pointer-events: auto;
+	/* fill: rgb(61, 61, 61); */
+	fill: transparent;
+}

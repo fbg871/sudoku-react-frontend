@@ -11,9 +11,37 @@ import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import { Container, createTheme, Link } from '@mui/material'
 import SettingsIcon from '@mui/icons-material/Settings'
+import { RootState } from '../../store'
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { destroyUser } from '../../slices/userSlice'
 
 const Header = () => {
 	const darkTheme = createTheme()
+
+	const [username, setUsername] = useState('')
+
+	const dispatch = useDispatch()
+	const navigate = useNavigate()
+
+	useEffect(() => {
+		if (localStorage.getItem('username')) {
+			setUsername(localStorage.getItem('username')!)
+		} else {
+			setUsername('')
+		}
+	})
+
+	const user = useSelector((state: RootState) => state.user)
+
+	const handleLogout = () => {
+		localStorage.removeItem('access_token')
+		localStorage.removeItem('username')
+		localStorage.removeItem('email')
+		dispatch(destroyUser())
+		navigate('/')
+	}
 
 	return (
 		<AppBar elevation={0} position="static">
@@ -41,9 +69,15 @@ const Header = () => {
 				<IconButton href="/settings" color="inherit">
 					<SettingsIcon />
 				</IconButton>
-				<Button color="inherit" size="medium" href="/login">
-					Log in
-				</Button>
+				{username ? (
+					<Button color="inherit" size="medium" onClick={handleLogout}>
+						{localStorage.getItem('username')}
+					</Button>
+				) : (
+					<Button color="inherit" size="medium" href="/login">
+						Log in
+					</Button>
+				)}
 			</Toolbar>
 		</AppBar>
 	)

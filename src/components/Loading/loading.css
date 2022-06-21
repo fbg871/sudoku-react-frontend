@@ -1,0 +1,20 @@
+/* .loading-container {
+	display: grid;
+}
+
+.loading-mosaic {
+	display: grid;
+	grid-template-columns: repeat(9, 1fr);
+	grid-template-rows: repeat(9, 1fr);
+	gap: 0.5rem;
+
+	min-width: 9rem;
+	min-height: 9rem;
+}
+
+.cell {
+	min-height: 1rem;
+	min-width: 1rem;
+	background-color: blue;
+	box-sizing: border-box;
+} */

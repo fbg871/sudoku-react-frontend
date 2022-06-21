@@ -190,10 +190,6 @@ text {
 	user-select: none; /* Standard */
 }
 
-.multi {
-	cursor: cell;
-}
-
 /* GameBar */
 .bottom-nav {
 	background-color: rgb(48, 47, 47) !important;
